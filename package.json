@@ -1,7 +1,7 @@
 {
   "name": "three-or-multiples",
-  "version": "1.0.1",
-  "description": "This game is about determining whether the displayed number contains the digit 3 or is a multiple of 3.",
+  "version": "1.0.2",
+  "description": "A number guessing game where players determine if the number is a multiple of 3 or contains the digit 3.",
   "main": "index.js",
   "scripts": {
     "lint": "prettier --check . && eslint .",
@@ -14,6 +14,14 @@
     "type": "git",
     "url": "git+https://github.com/lsesmpmido/three-or-multiples.git"
   },
+  "keywords": [
+    "game",
+    "math-game",
+    "quiz",
+    "number",
+    "multiples-of-three",
+    "educational"
+  ],
   "author": "lsesmpmido",
   "license": "ISC",
   "bugs": {
