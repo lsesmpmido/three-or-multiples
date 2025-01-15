@@ -1,11 +1,14 @@
 {
   "name": "three-or-multiples",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "This game is about determining whether the displayed number contains the digit 3 or is a multiple of 3.",
   "main": "index.js",
   "scripts": {
     "lint": "prettier --check . && eslint .",
     "fix": "prettier --write . && eslint --fix ."
+  },
+  "bin": {
+    "three-or-multiples": "./index.js"
   },
   "repository": {
     "type": "git",
