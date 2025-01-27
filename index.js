@@ -1,12 +1,7 @@
-const readline = require("readline");
+import inquirer from "inquirer";
 
 class Game {
   constructor() {
-    this.rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    });
-
     this.failCount = 0;
     this.correctCount = 0;
     this.timeout = null;
@@ -14,19 +9,10 @@ class Game {
   }
 
   async beginGame() {
-    const remainingLives = 5 - this.failCount;
     this.number = Math.floor(Math.random() * 100) + 1;
-
-    console.log(
-      `この数はどっち?: ${this.number}（あと${remainingLives}回失敗で終了）`,
-    );
-    console.log(
-      "「3の倍数」または「3を含む数字」のときは1、そうでない場合は2、終了する場合はexitを入力",
-    );
-
     this.startTimer();
 
-    const answer = await this.loadUserInput("あなたの回答: ");
+    const answer = await this.loadUserInput();
 
     clearTimeout(this.timeout);
 
@@ -57,12 +43,21 @@ class Game {
     }, 5000);
   }
 
-  loadUserInput(prompt) {
-    return new Promise((resolve) => {
-      this.rl.question(prompt, (answer) =>
-        resolve(answer.trim().toLowerCase()),
-      );
-    });
+  loadUserInput() {
+    return inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "answer",
+          message: `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
+          choices: [
+            { name: "3の倍数または3を含む数字", value: "1" },
+            { name: "それ以外の数字", value: "2" },
+            { name: "終了", value: "exit" },
+          ],
+        },
+      ])
+      .then((answers) => answers.answer);
   }
 
   checkThreeRelated(number) {
@@ -87,7 +82,7 @@ class Game {
   endGame() {
     console.log("-------------------終了-------------------");
     console.log(`正解した問題数 ${this.correctCount}`);
-    this.rl.close();
+    inquirer.prompt([]);
   }
 }
 
