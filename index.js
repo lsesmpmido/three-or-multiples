@@ -1,4 +1,6 @@
 import inquirer from "inquirer";
+import { EventEmitter } from "events";
+EventEmitter.defaultMaxListeners = 20;
 
 class Game {
   constructor() {
@@ -9,26 +11,29 @@ class Game {
   }
 
   async beginGame() {
-    this.number = Math.floor(Math.random() * 100) + 1;
-    this.startTimer();
+    while (this.failCount < 5) {
+      this.number = Math.floor(Math.random() * 100) + 1;
+      this.startTimer();
+      console.log(
+        `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
+      );
 
-    const answer = await this.loadUserInput();
+      const answer = await this.loadUserInput("あなたの回答: ");
+      clearTimeout(this.timeout);
 
-    clearTimeout(this.timeout);
+      if (answer === "exit") {
+        this.endGame();
+        return;
+      }
 
-    if (answer === "exit") {
-      this.endGame();
-      return;
+      const correctAnswer = this.checkThreeRelated(this.number) ? "1" : "2";
+      this.checkAnswer(answer, correctAnswer);
+
+      if (this.failCount >= 5) {
+        break;
+      }
     }
-
-    const correctAnswer = this.checkThreeRelated(this.number) ? "1" : "2";
-    this.checkAnswer(answer, correctAnswer);
-
-    if (this.failCount < 5) {
-      this.beginGame();
-    } else {
-      this.endGame();
-    }
+    this.endGame();
   }
 
   startTimer() {
@@ -43,13 +48,13 @@ class Game {
     }, 5000);
   }
 
-  loadUserInput() {
+  loadUserInput(prompt) {
     return inquirer
       .prompt([
         {
           type: "list",
           name: "answer",
-          message: `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
+          message: prompt,
           choices: [
             { name: "3の倍数または3を含む数字", value: "1" },
             { name: "それ以外の数字", value: "2" },
@@ -82,7 +87,7 @@ class Game {
   endGame() {
     console.log("-------------------終了-------------------");
     console.log(`正解した問題数 ${this.correctCount}`);
-    inquirer.prompt([]);
+    process.exit();
   }
 }
 
