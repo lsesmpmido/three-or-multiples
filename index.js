@@ -1,6 +1,4 @@
 import inquirer from "inquirer";
-import { EventEmitter } from "events";
-EventEmitter.defaultMaxListeners = 20;
 
 class Game {
   constructor() {
@@ -8,44 +6,50 @@ class Game {
     this.correctCount = 0;
     this.timeout = null;
     this.number = null;
+    this.isTimeover = false;
   }
 
   async beginGame() {
     while (this.failCount < 5) {
       this.number = Math.floor(Math.random() * 100) + 1;
-      this.startTimer();
+      this.startTime();
       console.log(
         `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
       );
-
       const answer = await this.loadUserInput("あなたの回答: ");
-      clearTimeout(this.timeout);
+      this.stopTime();
 
-      if (answer === "exit") {
-        this.endGame();
-        return;
-      }
-
-      const correctAnswer = this.checkThreeRelated(this.number) ? "1" : "2";
-      this.checkAnswer(answer, correctAnswer);
-
-      if (this.failCount >= 5) {
-        break;
+      if (this.isTimeover === true) {
+        this.failCount++;
+        if (this.failCount >= 5) {
+          this.endGame();
+        } else {
+          const choice = await this.pauseGame(
+            "⏰ 時間切れです！ゲームを続行しますか？",
+          );
+          if (choice === "終了") {
+            this.endGame();
+          }
+        }
+      } else {
+        const correctAnswer = this.checkThreeRelated(this.number)
+          ? "3の倍数または3を含む数字"
+          : "それ以外の数字";
+        this.checkAnswer(answer, correctAnswer);
       }
     }
     this.endGame();
   }
 
-  startTimer() {
+  startTime() {
     this.timeout = setTimeout(() => {
-      console.log("⏰ 時間切れ！");
-      this.failCount++;
-      if (this.failCount < 5) {
-        this.beginGame();
-      } else {
-        this.endGame();
-      }
+      this.isTimeover = true;
     }, 5000);
+  }
+
+  stopTime() {
+    this.isTimeover = false;
+    clearTimeout(this.timeout);
   }
 
   loadUserInput(prompt) {
@@ -56,13 +60,25 @@ class Game {
           name: "answer",
           message: prompt,
           choices: [
-            { name: "3の倍数または3を含む数字", value: "1" },
-            { name: "それ以外の数字", value: "2" },
-            { name: "終了", value: "exit" },
+            { name: "3の倍数または3を含む数字" },
+            { name: "それ以外の数字" },
           ],
         },
       ])
       .then((answers) => answers.answer);
+  }
+
+  pauseGame(prompt) {
+    return inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "choice",
+          message: prompt,
+          choices: [{ name: "続行" }, { name: "終了" }],
+        },
+      ])
+      .then((choices) => choices.choice);
   }
 
   checkThreeRelated(number) {
@@ -70,23 +86,18 @@ class Game {
   }
 
   checkAnswer(answer, correctAnswer) {
-    if (answer !== "1" && answer !== "2") {
-      console.log("🙅 無効な入力です 1または2を入力してください");
-      this.failCount++;
+    if (answer === correctAnswer) {
+      console.log("🙆 正解");
+      this.correctCount++;
     } else {
-      if (answer === correctAnswer) {
-        console.log("🙆 正解");
-        this.correctCount++;
-      } else {
-        console.log("🙅 不正解");
-        this.failCount++;
-      }
+      console.log("🙅 不正解");
+      this.failCount++;
     }
   }
 
   endGame() {
     console.log("-------------------終了-------------------");
-    console.log(`正解した問題数 ${this.correctCount}`);
+    console.log(`正解した問題数: ${this.correctCount}`);
     process.exit();
   }
 }
