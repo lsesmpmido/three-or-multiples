@@ -1,6 +1,6 @@
 {
   "name": "three-or-multiples",
-  "version": "1.0.2",
+  "version": "1.1.2",
   "description": "A number guessing game where players determine if the number is a multiple of 3 or contains the digit 3.",
   "main": "index.js",
   "scripts": {
