@@ -17,7 +17,6 @@ class Game {
         `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
       );
       const answer = await this.loadUserInput("あなたの回答: ");
-      this.stopTime();
 
       if (this.isTimeover === true) {
         this.failCount++;
@@ -37,6 +36,7 @@ class Game {
           : "それ以外の数字";
         this.checkAnswer(answer, correctAnswer);
       }
+      this.stopTime();
     }
     this.endGame();
   }
