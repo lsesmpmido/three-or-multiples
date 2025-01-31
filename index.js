@@ -33,8 +33,8 @@ class Game {
           }
         }
       } else {
-        const correctAnswer = this.checkThreeRelated(this.number);
-        this.checkAnswer(answer, correctAnswer);
+        const correctAnswer = this.isThreeRelated(this.number);
+        this.evaluateAnswer(answer, correctAnswer);
       }
       this.stopTime();
     }
@@ -81,11 +81,11 @@ class Game {
       .then((choices) => choices.choice);
   }
 
-  checkThreeRelated(number) {
+  isThreeRelated(number) {
     return number % 3 === 0 || number.toString().includes("3");
   }
 
-  checkAnswer(answer, correctAnswer) {
+  evaluateAnswer(answer, correctAnswer) {
     if (answer === correctAnswer) {
       console.log("🙆 正解");
       this.correctCount++;
