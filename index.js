@@ -33,9 +33,7 @@ class Game {
           }
         }
       } else {
-        const correctAnswer = this.checkThreeRelated(this.number)
-          ? "3の倍数または3を含む数字"
-          : "それ以外の数字";
+        const correctAnswer = this.checkThreeRelated(this.number);
         this.checkAnswer(answer, correctAnswer);
       }
       this.stopTime();
@@ -62,8 +60,8 @@ class Game {
           name: "answer",
           message: prompt,
           choices: [
-            { name: "3の倍数または3を含む数字" },
-            { name: "それ以外の数字" },
+            { name: "3の倍数または3を含む数字", value: true },
+            { name: "それ以外の数字", value: false },
           ],
         },
       ])
