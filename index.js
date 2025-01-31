@@ -18,14 +18,14 @@ class Game {
       console.log(
         `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
       );
-      const answer = await this.loadUserInput("あなたの回答: ");
+      const answer = await this.fetchAnswer("あなたの回答: ");
 
       if (this.isTimeover === true) {
         this.failCount++;
         if (this.failCount >= 5) {
           this.endGame();
         } else {
-          const choice = await this.pauseGame(
+          const choice = await this.askToContinue(
             "⏰ 時間切れです！ゲームを続行しますか？",
           );
           if (choice === "終了") {
@@ -54,7 +54,7 @@ class Game {
     clearTimeout(this.timeout);
   }
 
-  loadUserInput(prompt) {
+  fetchAnswer(prompt) {
     return inquirer
       .prompt([
         {
@@ -70,7 +70,7 @@ class Game {
       .then((answers) => answers.answer);
   }
 
-  pauseGame(prompt) {
+  askToContinue(prompt) {
     return inquirer
       .prompt([
         {
