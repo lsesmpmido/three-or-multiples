@@ -11,7 +11,7 @@ class Game {
     this.isTimeover = false;
   }
 
-  async beginGame() {
+  async execute() {
     while (this.failCount < 5) {
       this.number = Math.floor(Math.random() * 100) + 1;
       this.startTime();
@@ -23,13 +23,13 @@ class Game {
       if (this.isTimeover === true) {
         this.failCount++;
         if (this.failCount >= 5) {
-          this.endGame();
+          this.finish();
         } else {
           const choice = await this.askToContinue(
             "⏰ 時間切れです！ゲームを続行しますか？",
           );
           if (choice === "終了") {
-            this.endGame();
+            this.finish();
           }
         }
       } else {
@@ -40,7 +40,7 @@ class Game {
       }
       this.stopTime();
     }
-    this.endGame();
+    this.finish();
   }
 
   startTime() {
@@ -97,7 +97,7 @@ class Game {
     }
   }
 
-  endGame() {
+  finish() {
     console.log("-------------------終了-------------------");
     console.log(`正解した問題数: ${this.correctCount}`);
     process.exit();
@@ -105,4 +105,4 @@ class Game {
 }
 
 const game = new Game();
-game.beginGame();
+game.execute();
