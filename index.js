@@ -39,31 +39,31 @@ class Game {
 
   async fetchAnswer(prompt) {
     let timeout;
+    const promptInstance = inquirer.prompt([
+      {
+        type: "list",
+        name: "answer",
+        message: prompt,
+        choices: [
+          { name: "3の倍数または3を含む数字", value: true },
+          { name: "それ以外の数字", value: false },
+        ],
+      },
+    ]);
+
     const timeoutPromise = new Promise((resolve) => {
       timeout = setTimeout(() => {
-        console.log();
         this.isTimeover = true;
+        promptInstance.ui.close();
         resolve(null);
       }, 5000);
     });
 
-    const promptPromise = inquirer
-      .prompt([
-        {
-          type: "list",
-          name: "answer",
-          message: prompt,
-          choices: [
-            { name: "3の倍数または3を含む数字", value: true },
-            { name: "それ以外の数字", value: false },
-          ],
-        },
-      ])
-      .then((answers) => {
-        clearTimeout(timeout);
-        this.isTimeover = false;
-        return answers.answer;
-      });
+    const promptPromise = promptInstance.then((answers) => {
+      clearTimeout(timeout);
+      this.isTimeover = false;
+      return answers.answer;
+    });
 
     return Promise.race([timeoutPromise, promptPromise]);
   }
