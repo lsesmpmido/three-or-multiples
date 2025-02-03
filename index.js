@@ -6,17 +6,14 @@ class Game {
   constructor() {
     this.failCount = 0;
     this.correctCount = 0;
-    this.timeout = null;
-    this.number = null;
     this.isTimeover = false;
   }
 
   async execute() {
     while (this.failCount < 5) {
-      this.number = Math.floor(Math.random() * 100) + 1;
-      this.startTime();
+      const number = Math.floor(Math.random() * 100) + 1;
       console.log(
-        `この数はどっち?: ${this.number}（あと${5 - this.failCount}回失敗で終了）`,
+        `この数はどっち?: ${number}（あと${5 - this.failCount}回失敗で終了）`,
       );
       const answer = await this.fetchAnswer("あなたの回答: ");
 
@@ -33,27 +30,24 @@ class Game {
           }
         }
       } else {
-        const correctAnswer = this.isThreeRelated(this.number);
+        const correctAnswer = this.isThreeRelated(number);
         this.evaluateAnswer(answer, correctAnswer);
       }
-      this.stopTime();
     }
     this.finish();
   }
 
-  startTime() {
-    this.timeout = setTimeout(() => {
-      this.isTimeover = true;
-    }, 5000);
-  }
+  async fetchAnswer(prompt) {
+    let timeout;
+    const timeoutPromise = new Promise((resolve) => {
+      timeout = setTimeout(() => {
+        console.log();
+        this.isTimeover = true;
+        resolve(null);
+      }, 5000);
+    });
 
-  stopTime() {
-    this.isTimeover = false;
-    clearTimeout(this.timeout);
-  }
-
-  fetchAnswer(prompt) {
-    return inquirer
+    const promptPromise = inquirer
       .prompt([
         {
           type: "list",
@@ -65,7 +59,13 @@ class Game {
           ],
         },
       ])
-      .then((answers) => answers.answer);
+      .then((answers) => {
+        clearTimeout(timeout);
+        this.isTimeover = false;
+        return answers.answer;
+      });
+
+    return Promise.race([timeoutPromise, promptPromise]);
   }
 
   askToContinue(prompt) {
