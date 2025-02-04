@@ -11,15 +11,16 @@ class Game {
 
   async execute() {
     while (this.failCount < 5) {
+      const remainingPlays = 5;
       const number = Math.floor(Math.random() * 100) + 1;
       console.log(
-        `この数はどっち?: ${number}（あと${5 - this.failCount}回失敗で終了）`,
+        `この数はどっち?: ${number}（あと${remainingPlays - this.failCount}回失敗で終了）`,
       );
       const answer = await this.fetchAnswer("あなたの回答: ");
 
       if (this.isTimeover === true) {
         this.failCount++;
-        if (this.failCount >= 5) {
+        if (this.failCount >= remainingPlays) {
           this.finish();
         } else {
           const choice = await this.askToContinue(
