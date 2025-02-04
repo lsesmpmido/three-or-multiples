@@ -18,7 +18,7 @@ class Game {
       );
       const answer = await this.fetchAnswer("あなたの回答: ");
 
-      if (this.isTimeover === true) {
+      if (this.isTimeover) {
         this.failCount++;
         if (this.failCount >= remainingPlays) {
           this.finish();
