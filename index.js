@@ -3,6 +3,7 @@
 import inquirer from "inquirer";
 
 class Game {
+  static PLAY_COUNT = 5;
   constructor() {
     this.failCount = 0;
     this.correctCount = 0;
@@ -10,17 +11,16 @@ class Game {
   }
 
   async execute() {
-    while (this.failCount < 5) {
-      const remainingPlays = 5;
+    while (this.failCount < Game.PLAY_COUNT) {
       const number = Math.floor(Math.random() * 100) + 1;
       console.log(
-        `この数はどっち?: ${number}（あと${remainingPlays - this.failCount}回失敗で終了）`,
+        `この数はどっち?: ${number}（あと${Game.PLAY_COUNT - this.failCount}回失敗で終了）`,
       );
       const answer = await this.fetchAnswer("あなたの回答: ");
 
       if (this.isTimeover) {
         this.failCount++;
-        if (this.failCount >= remainingPlays) {
+        if (this.failCount >= Game.PLAY_COUNT) {
           this.finish();
         } else {
           const choice = await this.askToContinue(
